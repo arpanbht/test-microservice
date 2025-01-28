@@ -1,29 +1,31 @@
 services:
-  app1:
+  admin:
     build:
-      context: ./app1
+      context: ./AdminService
     ports:
-      - "3001:3001"
+      - "8000:8000"
     environment:
-      - PORT=3001
-      - MONGO_URI=mongodb://arpan:arpan@mongo:27017/app1db?authSource=admin
+      - PORT=8000
+      - MONGO_URI=mongodb://dbAdmin:dbPassword@mongo:27017/admin-service?authSource=admin
+      - JWT_SECRET=vT96tfSyJqD2tgviU6Mb65W1z
     depends_on:
       - mongo
     networks:
-      - my_network
+      - microservices
 
-  app2:
+  user:
     build:
-      context: ./app2
+      context: ./UserService
     ports:
-      - "3002:3002"
+      - "9000:9000"
     environment:
-      - PORT=3002
-      - MONGO_URI=mongodb://arpan:arpan@mongo:27017/app2db?authSource=admin
+      - PORT=9000
+      - MONGO_URI=mongodb://dbAdmin:dbPassword@mongo:27017/user-service?authSource=admin
+      - JWT_SECRET=vT96tfSyJqD2tgviU6Mb65W1z
     depends_on:
       - mongo
     networks:
-      - my_network
+      - microservices
 
   mongo:
     image: mongo:latest
@@ -31,12 +33,12 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: arpan
-      MONGO_INITDB_ROOT_PASSWORD: arpan
+      MONGO_INITDB_ROOT_USERNAME: dbAdmin
+      MONGO_INITDB_ROOT_PASSWORD: dbPassword
     volumes:
-      - mongo_data:/data/db
+      - db_data:/data/db
     networks:
-      - my_network
+      - microservices
 
   mongo-express:
     image: mongo-express:latest
@@ -44,18 +46,18 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: arpan
-      ME_CONFIG_MONGODB_ADMINPASSWORD: arpan
-      ME_CONFIG_MONGODB_URL: mongodb://arpan:arpan@mongo:27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: dbAdmin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: dbPassword
+      ME_CONFIG_MONGODB_URL: mongodb://dbAdmin:dbPassword@mongo:27017
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-      ME_CONFIG_BASICAUTH_USERNAME: arpan
-      ME_CONFIG_BASICAUTH_PASSWORD: arpan
+      ME_CONFIG_BASICAUTH_USERNAME: test
+      ME_CONFIG_BASICAUTH_PASSWORD: test
     networks:
-      - my_network
+      - microservices
 
 volumes:
-  mongo_data:
+  db_data:
 
 networks:
-  my_network:
+  microservices:
     driver: bridge
