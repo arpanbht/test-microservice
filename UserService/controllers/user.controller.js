@@ -91,7 +91,7 @@ export const getAllUsers = expressAsyncHandler(async (req, res) => {
       return sendError(res, 400, "No users found.");
     }
 
-    return sendSuccess(res, 200, admins, "Users fetched successfully.");
+    return sendSuccess(res, 200, users, "Users fetched successfully.");
   } catch (error) {
     return sendServerError(res, error);
   }
